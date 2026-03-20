@@ -1,3 +1,5 @@
+using System;
+
 namespace gps_tracking_api.Models
 {
     public class Location
