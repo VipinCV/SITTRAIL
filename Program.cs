@@ -7,19 +7,16 @@ using gps_tracking_api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Render PORT fix
-builder.WebHost.ConfigureKestrel(options =>
-{
-    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-    options.ListenAnyIP(int.Parse(port));
-});
+// Set up port from environment variable
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Services
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))); 
 
 builder.Services.AddCors(options =>
 {
