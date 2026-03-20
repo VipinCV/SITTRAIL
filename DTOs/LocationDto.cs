@@ -1,3 +1,6 @@
+
+using System
+
 namespace gps_tracking_api.DTOs
 {
     public class LocationDto
