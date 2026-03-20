@@ -1,5 +1,5 @@
 
-using System
+using System;
 
 namespace gps_tracking_api.DTOs
 {
