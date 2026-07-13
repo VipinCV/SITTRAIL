@@ -7,17 +7,29 @@ using gps_tracking_api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Set up port from environment variable
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+// ============================================================
+// 🔧 CORRECT WAY: Set port via environment variable (.NET 6+)
+// ============================================================
+builder.WebHost.ConfigureKestrel(options =>
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    options.ListenAnyIP(int.Parse(port));
+});
 
-// Services
+// ============================================================
+// 📦 Register Services
+// ============================================================
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
+// 🔑 CORRECT: Use the connection string properly
+var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))); 
+    options.UseNpgsql(connectionString));
 
+// ============================================================
+// 🌐 CORS Configuration
+// ============================================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -26,8 +38,14 @@ builder.Services.AddCors(options =>
                         .AllowAnyOrigin());
 });
 
+// ============================================================
+// 🏗️ Build the App
+// ============================================================
 var app = builder.Build();
 
+// ============================================================
+// 🚀 Middleware Pipeline
+// ============================================================
 app.UseCors("AllowAll");
 
 app.MapControllers();
